@@ -66,7 +66,7 @@
         <div class="card">
           <div class="card-head">
             <div><h2>🚧 ทดสอบการแตะบัตร / ไม้กั้นอัตโนมัติ</h2>
-            <div class="card-sub">จำลองการทำงานตามรูปที่ 3 — ตรวจบัตร → เปิด/ไม่เปิดไม้กั้น → บันทึกประวัติ</div>
+            <div class="card-sub">จำลองการทำงาน — ตรวจบัตร → เปิด/ไม่เปิดไม้กั้น → บันทึกประวัติ</div>
             <div class="backend-status" id="backendStatus"><span class="backend-dot"></span><span id="backendStatusText">กำลังเชื่อมต่อฐานข้อมูล...</span></div></div>
           </div>
           <div class="gate-scene" id="gateScene">
@@ -178,13 +178,13 @@
           <button class="btn btn-primary btn-sm" id="btnAddStudent">➕ เพิ่มนักศึกษา</button>
         </div>
         <div class="filters">
-          <input type="search" id="studentSearch" placeholder="🔍 ค้นหาชื่อ / รหัสนักศึกษา / คณะ...">
+          <input type="search" id="studentSearch" placeholder="🔍 ค้นหาชื่อ / รหัสนักศึกษา / สาขา...">
         </div>
         <div class="table-wrap">
           <table>
             <thead><tr>
               <th>ลำดับ</th><th>ชื่อ-นามสกุล</th><th>รหัสนักศึกษา</th>
-              <th>คณะ / สาขา</th><th>สถานะบัตร</th><th>จัดการ</th>
+              <th>สาขา</th><th>สถานะบัตร</th><th>จัดการ</th>
             </tr></thead>
             <tbody id="studentTableBody"></tbody>
           </table>
@@ -218,7 +218,7 @@
           <div class="card-sub" style="margin-top:14px">* ค่าทั้งหมดเป็นการจำลองเพื่อสาธิต — ระบบจริงให้ ESP32 อ่านค่าจากเซ็นเซอร์วัดแรงดัน (Voltage Divider) แล้วส่งมาแสดงผล</div>
         </div>
         <div class="card">
-          <div class="card-head"><div><h2>⚙️ โครงระบบตามรูปที่ 2</h2><div class="card-sub">เส้นทางพลังงานและการทำงานของระบบ</div></div></div>
+          <div class="card-head"><div><h2>⚙️ โครงระบบ</h2><div class="card-sub">เส้นทางพลังงานและการทำงานของระบบ</div></div></div>
           <div class="flow">
             <div class="flow-item"><span class="flow-ico">☀️</span><div><b>แผงโซลาร์เซลล์ 50W 12V</b><small>เปลี่ยนพลังงานแสงอาทิตย์เป็นพลังงานไฟฟ้า</small></div></div>
             <div class="flow-arrow">⬇</div>
