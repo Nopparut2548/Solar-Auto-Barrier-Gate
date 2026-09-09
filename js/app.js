@@ -1,5 +1,5 @@
 /* ============================================================
-   Solar Gate System
+   Solar Auto Barrier Gate
    Frontend: HTML/CSS/JavaScript
    Backend: PHP + MySQL
 
@@ -70,15 +70,27 @@ async function apiRequest(url, options = {}) {
     }
   });
 
-  let payload = {};
+  // อ่านเป็น text ก่อน จะได้เห็น Error จาก PHP จริง ๆ
+  const rawText = await response.text();
+
+  let payload;
+
   try {
-    payload = await response.json();
-  } catch {
-    throw new Error('เซิร์ฟเวอร์ส่งข้อมูลกลับมาไม่ถูกต้อง');
+    payload = JSON.parse(rawText);
+  } catch (error) {
+    console.error('API RESPONSE:', rawText);
+
+    throw new Error(
+      `API ${url} ไม่ได้ส่ง JSON กลับมา\n` +
+      `HTTP ${response.status}\n` +
+      `Response: ${rawText.substring(0, 500)}`
+    );
   }
 
   if (!response.ok || payload.success === false) {
-    throw new Error(payload.message || `API Error ${response.status}`);
+    throw new Error(
+      payload.message || `API Error ${response.status}`
+    );
   }
 
   return payload;
@@ -92,6 +104,23 @@ async function loadStudents() {
 async function loadLogs() {
   const data = await apiRequest('api/logs.php');
   logs = data.logs || [];
+}
+
+function setBackendStatus(connected, message) {
+  const box = $('backendStatus');
+  const text = $('backendStatusText');
+  if (!box || !text) return;
+  box.classList.toggle('offline', !connected);
+  text.textContent = message;
+}
+
+function renderAll() {
+  renderStats();
+  renderChart();
+  renderRecent();
+  renderLogs();
+  renderStudents();
+  renderScanSelect();
 }
 
 async function loadData() {
@@ -735,7 +764,7 @@ const pageMeta = {
   dashboard: ['📊 แดชบอร์ดภาพรวม', 'ภาพรวมการใช้งานระบบวันนี้'],
   logs: ['📋 บันทึกการเข้า-ออก', 'ประวัติการแตะบัตร RFID ทั้งหมด — เพิ่ม / แก้ไข / ลบ ได้'],
   students: ['🎓 จัดการข้อมูลนักศึกษา', 'รายชื่อนักศึกษาที่มีสิทธิ์ผ่านไม้กั้น (Whitelist)'],
-  solar: ['🔋 ระบบพลังงานแสงอาทิตย์', 'สถานะแผงโซลาร์เซลล์ แบตเตอรี่ และโครงระบบตามรูปที่ 2']
+  solar: ['🔋 ระบบพลังงานแสงอาทิตย์', 'สถานะแผงโซลาร์เซลล์ แบตเตอรี่ และโครงระบบ']
 };
 
 function go(page) {

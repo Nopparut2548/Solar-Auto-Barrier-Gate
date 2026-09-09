@@ -1,53 +1,40 @@
 # Solar Gate System (PHP + MySQL)
 
 โปรเจกต์เว็บควบคุมการเข้า-ออกรถจักรยานยนต์ด้วยไม้กั้นอัตโนมัติ ใช้พลังงานแสงอาทิตย์
-โดยคง UI เดิมไว้ และเปลี่ยนการเก็บข้อมูลนักศึกษา/ประวัติจาก localStorage มาเป็น PHP + MySQL
 
-## โครงสร้าง
+## ฐานข้อมูลที่ระบบนี้ใช้
 
-```text
-solar-gate-system/
-├── index.php
-├── database.sql
-├── css/
-│   └── style.css
-├── js/
-│   └── app.js
-└── api/
-    ├── config.php
-    ├── bootstrap.php
-    ├── health.php
-    ├── students.php
-    ├── logs.php
-    └── scan.php
-```
+solar_auto_barrier_gate
 
 ## ติดตั้งบน XAMPP
 
-1. วางโฟลเดอร์ `solar-gate-system` ไว้ใน `C:\xampp\htdocs\`
-2. เปิด Apache และ MySQL ใน XAMPP
-3. เข้า phpMyAdmin แล้ว Import ไฟล์ `database.sql`
-4. เปิด `http://localhost/solar-gate-system/`
+1. วางโฟลเดอร์ไว้ใน `C:\xampp\htdocs\`
+2. เปิด Apache และ MySQL
+3. ไม่จำเป็นต้องสร้างฐานข้อมูลใหม่ ถ้ามี `solar_auto_barrier_gate` อยู่แล้ว
+4. เปิด `http://localhost/Solar_Auto_Barrier_Gate/`
 
-ค่าเริ่มต้นของ XAMPP ที่โปรเจกต์ใช้คือ MySQL `root` และไม่มีรหัสผ่าน หากเครื่องของผู้ใช้ตั้งรหัสผ่านไว้ ให้แก้ `api/config.php`
+ถ้าใช้โฟลเดอร์ชื่ออื่น ให้เปิด URL ให้ตรงกับชื่อโฟลเดอร์
 
-## API หลัก
+## ตรวจสอบการเชื่อมต่อ
 
-- `GET api/health.php` ตรวจการเชื่อมต่อฐานข้อมูล
-- `GET/POST/PUT/DELETE api/students.php` จัดการข้อมูลนักศึกษา
-- `GET/POST/PUT/DELETE api/logs.php` จัดการประวัติการเข้า-ออก
-- `DELETE api/logs.php?all=1` ล้างประวัติทั้งหมด
-- `POST api/scan.php` จำลอง/รับการแตะบัตรและให้เซิร์ฟเวอร์เป็นผู้ตรวจสิทธิ์
+เปิด:
 
-### เมื่อเชื่อม ESP32 จริง
+```text
+http://localhost/Solar_Auto_Barrier_Gate/api/health.php
+```
 
-ESP32 สามารถส่ง UID ไปที่ `api/scan.php` เช่น
+ถ้าเชื่อมต่อสำเร็จ จะได้ JSON เช่น:
 
 ```json
 {
-  "rfid_uid": "A1 B2 C3 D4"
+  "success": true,
+  "database": "solar_auto_barrier_gate"
 }
 ```
 
-ฝั่ง PHP จะตรวจสอบกับ `students.rfid_uid` และ `students.status` แล้วตอบกลับว่าอนุญาตหรือปฏิเสธ
-จึงเหมาะสำหรับต่อยอดเป็น ESP32 → PHP → MySQL → ควบคุมไม้กั้น
+## หมายเหตุ
+
+หน้าเว็บยังคงใช้ `localStorage` เฉพาะค่าธีมและค่าจำลองพลังงานเท่านั้น
+ข้อมูลนักศึกษาและประวัติการเข้า-ออกใช้ MySQL ผ่าน PHP API
+
+ฐานข้อมูลเดิมไม่มีคอลัมน์สำหรับเก็บประเภทเข้า/ออกโดยตรง ระบบจึงสลับ `เข้า → ออก → เข้า...` จากประวัติการอนุญาตล่าสุดของนักศึกษา
