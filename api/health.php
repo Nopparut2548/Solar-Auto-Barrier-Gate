@@ -9,7 +9,7 @@ $logsResult = $conn->query('SELECT COUNT(*) AS total FROM access_logs');
 if (!$studentsResult || !$logsResult) {
     json_response([
         'success' => false,
-        'message' => 'เชื่อมต่อฐานข้อมูลสำเร็จ: ' . $conn->error
+        'message' => 'เชื่อมต่อฐานข้อมูลสำเร็จ แต่โครงสร้างตารางไม่ตรงกับระบบ: ' . $conn->error
     ], 500);
 }
 

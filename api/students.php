@@ -17,8 +17,9 @@ function student_row(array $row): array {
 
 if ($method === 'GET') {
     $result = $conn->query(
-    'SELECT id, student_code, student_name, rfid_uid, active
-     FROM students ORDER BY id ASC'
+        'SELECT id, student_code, student_name, rfid_uid, active
+         FROM students
+         ORDER BY id ASC'
     );
 
     if (!$result) {
@@ -71,9 +72,8 @@ if ($method === 'POST') {
     }
 
     $stmt = $conn->prepare(
-        'INSERT INTO students
-        (student_code, student_name, rfid_uid, active)
-        VALUES (?, ?, ?, ?)'
+        'INSERT INTO students (student_code, student_name, rfid_uid, active)
+         VALUES (?, ?, ?, ?)'
     );
 
     if (!$stmt) {

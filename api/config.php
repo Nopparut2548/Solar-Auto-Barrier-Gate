@@ -1,4 +1,6 @@
 <?php
+// Solar Gate System - Database Configuration
+// Database used by the user's existing phpMyAdmin project.
 
 const DB_HOST = '127.0.0.1';
 const DB_NAME = 'solar_auto_barrier_gate';

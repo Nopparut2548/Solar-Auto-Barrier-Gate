@@ -1,5 +1,5 @@
 /* ============================================================
-   Solar Auto Barrier Gate
+   Solar Gate System
    Frontend: HTML/CSS/JavaScript
    Backend: PHP + MySQL
 
@@ -70,27 +70,15 @@ async function apiRequest(url, options = {}) {
     }
   });
 
-  // อ่านเป็น text ก่อน จะได้เห็น Error จาก PHP จริง ๆ
-  const rawText = await response.text();
-
-  let payload;
-
+  let payload = {};
   try {
-    payload = JSON.parse(rawText);
-  } catch (error) {
-    console.error('API RESPONSE:', rawText);
-
-    throw new Error(
-      `API ${url} ไม่ได้ส่ง JSON กลับมา\n` +
-      `HTTP ${response.status}\n` +
-      `Response: ${rawText.substring(0, 500)}`
-    );
+    payload = await response.json();
+  } catch {
+    throw new Error('เซิร์ฟเวอร์ส่งข้อมูลกลับมาไม่ถูกต้อง');
   }
 
   if (!response.ok || payload.success === false) {
-    throw new Error(
-      payload.message || `API Error ${response.status}`
-    );
+    throw new Error(payload.message || `API Error ${response.status}`);
   }
 
   return payload;
@@ -664,6 +652,21 @@ $('btnAddStudent').addEventListener('click', () => openStudentModal());
 $('btnDateClear').addEventListener('click', clearSelectedDate);
 $('logSearch').addEventListener('input', renderLogs);
 $('studentSearch').addEventListener('input', renderStudents);
+
+
+// ---------- ออกจากระบบ ----------
+const logoutButton = $('btnLogout');
+if (logoutButton) {
+  logoutButton.addEventListener('click', async () => {
+    try {
+      await apiRequest('api/auth.php', { method: 'DELETE' });
+      window.location.href = 'login.php';
+    } catch (error) {
+      toast('❌ ' + error.message, 'error');
+    }
+  });
+}
+
 $('btnMenu').addEventListener('click', () => {
   $('sidebar').classList.toggle('show');
   $('backdrop').classList.toggle('show');
@@ -671,6 +674,25 @@ $('btnMenu').addEventListener('click', () => {
 $('backdrop').addEventListener('click', () => {
   $('sidebar').classList.remove('show');
   $('backdrop').classList.remove('show');
+});
+
+// ---------- ออกจากระบบ ----------
+$('btnLogout').addEventListener('click', async () => {
+  const confirmed = window.confirm('ต้องการออกจากระบบใช่หรือไม่?');
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch('api/auth.php', { method: 'DELETE' });
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      throw new Error(data.message || 'ออกจากระบบไม่สำเร็จ');
+    }
+
+    window.location.href = 'login.php';
+  } catch (error) {
+    toast('❌ ' + error.message, 'error');
+  }
 });
 
 // ---------- ปฏิทินภาษาไทย ----------

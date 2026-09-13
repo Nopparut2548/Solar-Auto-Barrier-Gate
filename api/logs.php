@@ -50,7 +50,7 @@ if ($method === 'GET') {
             'id' => (int)$row['id'],
             'studentName' => $row['student_name'] ?: 'ไม่พบข้อมูลนักศึกษา',
             'studentId' => $row['student_code'] ?: '-',
-            'rfidUid' => '',
+            'rfidUid' => display_uid($row['rfid_uid'] ?? ''),
             'type' => $type,
             'result' => $resultName,
             'timestamp' => iso_timestamp($row['tap_at'])

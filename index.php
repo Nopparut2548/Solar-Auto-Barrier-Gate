@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+if (empty($_SESSION['user'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -29,8 +37,9 @@
       <button class="nav-item" data-page="solar"><span>🔋</span> ระบบพลังงาน</button>
     </nav>
     <div class="sidebar-foot">
-      โปรเจกต์: ระบบควบคุมการเข้า-ออกรถจักรยานยนต์<br>ด้วยไม้กั้นอัตโนมัติ จากพลังงานแสงอาทิตย์<br>
-      <span style="opacity:.85">ESP32 • RFID RC522 • Solar Cell</span>
+      ระบบควบคุมการเข้า-ออกรถจักรยานยนต์<br>ด้วยไม้กั้นอัตโนมัติ จากพลังงานแสงอาทิตย์<br>
+      <span style="opacity:.85"></span>
+      <button class="logout-btn" id="btnLogout" type="button">🚪 ออกจากระบบ</button>
     </div>
   </aside>
   <div class="backdrop" id="backdrop"></div>
@@ -66,7 +75,7 @@
         <div class="card">
           <div class="card-head">
             <div><h2>🚧 ทดสอบการแตะบัตร / ไม้กั้นอัตโนมัติ</h2>
-            <div class="card-sub">จำลองการทำงาน — ตรวจบัตร → เปิด/ไม่เปิดไม้กั้น → บันทึกประวัติ</div>
+            <div class="card-sub">จำลองการทำงานตามรูปที่ 3 — ตรวจบัตร → เปิด/ไม่เปิดไม้กั้น → บันทึกประวัติ</div>
             <div class="backend-status" id="backendStatus"><span class="backend-dot"></span><span id="backendStatusText">กำลังเชื่อมต่อฐานข้อมูล...</span></div></div>
           </div>
           <div class="gate-scene" id="gateScene">
@@ -178,13 +187,13 @@
           <button class="btn btn-primary btn-sm" id="btnAddStudent">➕ เพิ่มนักศึกษา</button>
         </div>
         <div class="filters">
-          <input type="search" id="studentSearch" placeholder="🔍 ค้นหาชื่อ / รหัสนักศึกษา / สาขา...">
+          <input type="search" id="studentSearch" placeholder="🔍 ค้นหาชื่อ / รหัสนักศึกษา / คณะ...">
         </div>
         <div class="table-wrap">
           <table>
             <thead><tr>
               <th>ลำดับ</th><th>ชื่อ-นามสกุล</th><th>รหัสนักศึกษา</th>
-              <th>สาขา</th><th>สถานะบัตร</th><th>จัดการ</th>
+              <th>คณะ / สาขา</th><th>สถานะบัตร</th><th>จัดการ</th>
             </tr></thead>
             <tbody id="studentTableBody"></tbody>
           </table>

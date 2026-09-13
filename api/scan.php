@@ -67,6 +67,8 @@ if ($granted) {
     $lastStmt->execute();
     $last = $lastStmt->get_result()->fetch_assoc();
     $lastStmt->close();
+
+    // ในฐานข้อมูลเดิมยังไม่มีคอลัมน์บอกเข้า/ออกโดยตรง จึงสลับจากครั้งล่าสุด
     $type = $last ? 'out' : 'in';
 }
 

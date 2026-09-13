@@ -1,10 +1,32 @@
 # Solar Gate System (PHP + MySQL)
 
 โปรเจกต์เว็บควบคุมการเข้า-ออกรถจักรยานยนต์ด้วยไม้กั้นอัตโนมัติ ใช้พลังงานแสงอาทิตย์
+โดยคง UI เดิมไว้ และเชื่อมข้อมูลนักศึกษา/ประวัติการเข้า-ออกกับ PHP + MySQL
 
 ## ฐานข้อมูลที่ระบบนี้ใช้
 
+```text
 solar_auto_barrier_gate
+```
+
+ตารางที่ใช้:
+
+- `students`
+  - `id`
+  - `student_code`
+  - `student_name`
+  - `rfid_uid`
+  - `active`
+  - `created_at`
+  - `updated_at`
+- `access_logs`
+  - `id`
+  - `student_id`
+  - `rfid_uid`
+  - `status`
+  - `tap_at`
+
+โครงสร้างนี้ตรงกับฐานข้อมูลที่ใช้อยู่ใน phpMyAdmin ของโปรเจกต์
 
 ## ติดตั้งบน XAMPP
 
@@ -15,7 +37,7 @@ solar_auto_barrier_gate
 
 ถ้าใช้โฟลเดอร์ชื่ออื่น ให้เปิด URL ให้ตรงกับชื่อโฟลเดอร์
 
-## ตรวจสอบการเชื่อมต่อ
+## ตรวจการเชื่อมต่อ
 
 เปิด:
 
