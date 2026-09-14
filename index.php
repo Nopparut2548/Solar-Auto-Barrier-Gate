@@ -37,7 +37,7 @@ if (empty($_SESSION['user'])) {
       <button class="nav-item" data-page="solar"><span>🔋</span> ระบบพลังงาน</button>
     </nav>
     <div class="sidebar-foot">
-      ระบบควบคุมการเข้า-ออกรถจักรยานยนต์<br>ด้วยไม้กั้นอัตโนมัติ จากพลังงานแสงอาทิตย์<br>
+      โปรเจกต์: ระบบควบคุมการเข้า-ออกรถจักรยานยนต์<br>ด้วยไม้กั้นอัตโนมัติ จากพลังงานแสงอาทิตย์<br>
       <span style="opacity:.85"></span>
       <button class="logout-btn" id="btnLogout" type="button">🚪 ออกจากระบบ</button>
     </div>
@@ -75,7 +75,7 @@ if (empty($_SESSION['user'])) {
         <div class="card">
           <div class="card-head">
             <div><h2>🚧 ทดสอบการแตะบัตร / ไม้กั้นอัตโนมัติ</h2>
-            <div class="card-sub">จำลองการทำงานตามรูปที่ 3 — ตรวจบัตร → เปิด/ไม่เปิดไม้กั้น → บันทึกประวัติ</div>
+            <div class="card-sub">จำลองการทำงาน — ตรวจบัตร → เปิด/ไม่เปิดไม้กั้น → บันทึกประวัติ</div>
             <div class="backend-status" id="backendStatus"><span class="backend-dot"></span><span id="backendStatusText">กำลังเชื่อมต่อฐานข้อมูล...</span></div></div>
           </div>
           <div class="gate-scene" id="gateScene">
@@ -167,6 +167,12 @@ if (empty($_SESSION['user'])) {
           </div>
           <button class="btn btn-outline btn-sm" id="btnDateClear">ล้างวันที่</button>
         </div>
+        <div class="log-tabs" role="tablist" aria-label="ประเภทการเข้าออก">
+          <button type="button" class="log-tab active" data-log-filter="all">ทั้งหมด <span id="countAll">0</span></button>
+          <button type="button" class="log-tab" data-log-filter="in">คนที่เข้า <span id="countIn">0</span></button>
+          <button type="button" class="log-tab" data-log-filter="out">คนที่ออก <span id="countOut">0</span></button>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead><tr>
@@ -175,6 +181,11 @@ if (empty($_SESSION['user'])) {
             </tr></thead>
             <tbody id="logTableBody"></tbody>
           </table>
+        </div>
+        <div class="pagination" id="logPagination">
+          <button type="button" class="pagination-btn" id="logPrevPage">‹</button>
+          <div class="pagination-info" id="logPageInfo">หน้า 1 / 1</div>
+          <button type="button" class="pagination-btn" id="logNextPage">›</button>
         </div>
       </div>
     </section>
@@ -294,7 +305,7 @@ if (empty($_SESSION['user'])) {
 <div class="modal-overlay" id="confirmModal">
   <div class="modal modal-sm">
     <div class="confirm-body">
-      <div class="confirm-ico">🗑️</div>
+      <div class="confirm-ico" id="confirmIcon">🗑️</div>
       <h3 id="confirmTitle">ยืนยันการลบ</h3>
       <p id="confirmMsg"></p>
     </div>

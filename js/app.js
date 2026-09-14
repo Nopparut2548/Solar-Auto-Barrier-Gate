@@ -223,6 +223,10 @@ function renderRecent() {
 }
 
 // ---------- ตารางบันทึกการเข้า-ออก ----------
+const LOG_PAGE_SIZE = 10;
+let currentLogPage = 1;
+let currentLogFilter = 'all';
+
 function getFilteredLogs() {
   const query = ($('logSearch').value || '').toLowerCase().trim();
   const selectedDate = $('logDate').value;
@@ -232,21 +236,51 @@ function getFilteredLogs() {
     .filter(log => {
       if (query && !(String(log.studentName) + log.studentId).toLowerCase().includes(query)) return false;
       if (selectedDate && dateKey(fromSqlOrIso(log.timestamp)) !== selectedDate) return false;
+      if (currentLogFilter === 'in' && log.type !== 'in') return false;
+      if (currentLogFilter === 'out' && log.type !== 'out') return false;
       return true;
     });
+}
+
+function updateLogTabCounts() {
+  const query = ($('logSearch').value || '').toLowerCase().trim();
+  const selectedDate = $('logDate').value;
+  const base = [...logs].filter(log => {
+    if (query && !(String(log.studentName) + log.studentId).toLowerCase().includes(query)) return false;
+    if (selectedDate && dateKey(fromSqlOrIso(log.timestamp)) !== selectedDate) return false;
+    return true;
+  });
+
+  $('countAll').textContent = base.length;
+  $('countIn').textContent = base.filter(log => log.type === 'in').length;
+  $('countOut').textContent = base.filter(log => log.type === 'out').length;
+}
+
+function renderLogPagination(totalItems) {
+  const totalPages = Math.max(1, Math.ceil(totalItems / LOG_PAGE_SIZE));
+  if (currentLogPage > totalPages) currentLogPage = totalPages;
+
+  $('logPageInfo').textContent = `หน้า ${currentLogPage} / ${totalPages}`;
+  $('logPrevPage').disabled = currentLogPage <= 1;
+  $('logNextPage').disabled = currentLogPage >= totalPages;
 }
 
 function renderLogs() {
   const list = getFilteredLogs();
   $('logCount').textContent = logs.length + ' รายการ';
+  updateLogTabCounts();
+
   const body = $('logTableBody');
+  const start = (currentLogPage - 1) * LOG_PAGE_SIZE;
+  const pageItems = list.slice(start, start + LOG_PAGE_SIZE);
 
   if (list.length === 0) {
     body.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="empty-ico">🗂️</div>ไม่พบข้อมูลตามเงื่อนไขที่ค้นหา</div></td></tr>';
+    renderLogPagination(0);
     return;
   }
 
-  body.innerHTML = list.map((log, index) => {
+  body.innerHTML = pageItems.map((log, index) => {
     const typeBadge = log.type === 'in'
       ? '<span class="badge badge-in">เข้า</span>'
       : log.type === 'out'
@@ -258,9 +292,10 @@ function renderLogs() {
       : '<span class="badge badge-denied">ปฏิเสธ</span>';
 
     const dim = log.result === 'denied' ? ' dim' : '';
+    const rowNumber = start + index + 1;
 
     return `<tr>
-      <td class="mono">${index + 1}</td>
+      <td class="mono">${rowNumber}</td>
       <td><span class="cell-name${dim}">${esc(log.studentName)}</span></td>
       <td class="mono${dim}">${esc(log.studentId)}</td>
       <td>${typeBadge}</td>
@@ -274,6 +309,8 @@ function renderLogs() {
       </td>
     </tr>`;
   }).join('');
+
+  renderLogPagination(list.length);
 }
 
 function openLogModal(id = null) {
@@ -604,9 +641,12 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   });
 });
 
-function askConfirm(title, message, action) {
+function askConfirm(title, message, action, options = {}) {
   $('confirmTitle').textContent = title;
   $('confirmMsg').textContent = message;
+  $('confirmIcon').textContent = options.icon || '🗑️';
+  $('confirmOk').textContent = options.buttonText || 'ยืนยันลบ';
+  $('confirmOk').className = 'btn ' + (options.buttonClass || 'btn-danger');
   confirmAction = action;
   $('confirmModal').classList.add('show');
 }
@@ -625,6 +665,34 @@ function toast(message, type = 'success') {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => element.classList.remove('show'), 2600);
 }
+
+document.querySelectorAll('[data-log-filter]').forEach(button => {
+  button.addEventListener('click', () => {
+    currentLogFilter = button.dataset.logFilter;
+    currentLogPage = 1;
+
+    document.querySelectorAll('[data-log-filter]').forEach(tab => {
+      tab.classList.toggle('active', tab === button);
+    });
+
+    renderLogs();
+  });
+});
+
+$('logPrevPage').addEventListener('click', () => {
+  if (currentLogPage > 1) {
+    currentLogPage--;
+    renderLogs();
+  }
+});
+
+$('logNextPage').addEventListener('click', () => {
+  const totalPages = Math.max(1, Math.ceil(getFilteredLogs().length / LOG_PAGE_SIZE));
+  if (currentLogPage < totalPages) {
+    currentLogPage++;
+    renderLogs();
+  }
+});
 
 $('btnClearLogs').addEventListener('click', () => {
   if (logs.length === 0) {
@@ -650,20 +718,31 @@ $('btnClearLogs').addEventListener('click', () => {
 $('btnAddLog').addEventListener('click', () => openLogModal());
 $('btnAddStudent').addEventListener('click', () => openStudentModal());
 $('btnDateClear').addEventListener('click', clearSelectedDate);
-$('logSearch').addEventListener('input', renderLogs);
+$('logSearch').addEventListener('input', () => { currentLogPage = 1; renderLogs(); });
 $('studentSearch').addEventListener('input', renderStudents);
 
 
 // ---------- ออกจากระบบ ----------
 const logoutButton = $('btnLogout');
 if (logoutButton) {
-  logoutButton.addEventListener('click', async () => {
-    try {
-      await apiRequest('api/auth.php', { method: 'DELETE' });
-      window.location.href = 'login.php';
-    } catch (error) {
-      toast('❌ ' + error.message, 'error');
-    }
+  logoutButton.addEventListener('click', () => {
+    askConfirm(
+      'ออกจากระบบ?',
+      `คุณต้องการออกจากระบบ Solar Gate System ใช่หรือไม่?\nระบบจะพากลับไปยังหน้าเข้าสู่ระบบ`,
+      async () => {
+        try {
+          await apiRequest('api/auth.php', { method: 'DELETE' });
+          window.location.href = 'login.php';
+        } catch (error) {
+          toast('❌ ' + error.message, 'error');
+        }
+      },
+      {
+        icon: '🚪',
+        buttonText: 'ออกจากระบบ',
+        buttonClass: 'btn-logout-confirm'
+      }
+    );
   });
 }
 
@@ -674,25 +753,6 @@ $('btnMenu').addEventListener('click', () => {
 $('backdrop').addEventListener('click', () => {
   $('sidebar').classList.remove('show');
   $('backdrop').classList.remove('show');
-});
-
-// ---------- ออกจากระบบ ----------
-$('btnLogout').addEventListener('click', async () => {
-  const confirmed = window.confirm('ต้องการออกจากระบบใช่หรือไม่?');
-  if (!confirmed) return;
-
-  try {
-    const response = await fetch('api/auth.php', { method: 'DELETE' });
-    const data = await response.json();
-
-    if (!response.ok || data.success === false) {
-      throw new Error(data.message || 'ออกจากระบบไม่สำเร็จ');
-    }
-
-    window.location.href = 'login.php';
-  } catch (error) {
-    toast('❌ ' + error.message, 'error');
-  }
 });
 
 // ---------- ปฏิทินภาษาไทย ----------
@@ -747,6 +807,7 @@ function renderThaiCalendar() {
 
 function selectDate(value) {
   $('logDate').value = value;
+  currentLogPage = 1;
   const date = new Date(value + 'T00:00:00');
   $('logDateDisplay').value = date.toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' });
   $('datePickerPopup').classList.remove('show');
@@ -756,6 +817,7 @@ function selectDate(value) {
 
 function clearSelectedDate() {
   $('logDate').value = '';
+  currentLogPage = 1;
   $('logDateDisplay').value = '';
   $('datePickerPopup').classList.remove('show');
   renderThaiCalendar();

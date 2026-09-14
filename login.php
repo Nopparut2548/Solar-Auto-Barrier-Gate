@@ -86,9 +86,7 @@ if (!empty($_SESSION['user'])) {
 
         <div class="login-status" id="loginStatus"></div>
 
-        <div class="login-register-link">
-          ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a>
-        </div>
+
       </form>
 
       <div class="login-footer">

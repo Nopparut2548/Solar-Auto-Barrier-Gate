@@ -56,65 +56,6 @@ $data = request_json();
 if ($method === 'POST') {
     $action = (string)($data['action'] ?? 'login');
 
-    // ==================== สมัครสมาชิก ====================
-    if ($action === 'register') {
-        $displayName = trim((string)($data['display_name'] ?? ''));
-        $username = trim((string)($data['username'] ?? ''));
-        $password = (string)($data['password'] ?? '');
-        $confirmPassword = (string)($data['confirm_password'] ?? '');
-
-        if ($displayName === '' || $username === '' || $password === '' || $confirmPassword === '') {
-            json_response(['success' => false, 'message' => 'กรุณากรอกข้อมูลให้ครบทุกช่อง'], 422);
-        }
-
-        if (strlen($username) < 4) {
-            json_response(['success' => false, 'message' => 'ชื่อผู้ใช้ต้องมีอย่างน้อย 4 ตัวอักษร'], 422);
-        }
-
-        if (strlen($password) < 6) {
-            json_response(['success' => false, 'message' => 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'], 422);
-        }
-
-        if ($password !== $confirmPassword) {
-            json_response(['success' => false, 'message' => 'รหัสผ่านยืนยันไม่ตรงกัน'], 422);
-        }
-
-        $check = $conn->prepare('SELECT id FROM users WHERE username = ? LIMIT 1');
-        if (!$check) {
-            json_response(['success' => false, 'message' => 'ตรวจสอบชื่อผู้ใช้ไม่ได้: ' . $conn->error], 500);
-        }
-        $check->bind_param('s', $username);
-        $check->execute();
-        $exists = $check->get_result()->fetch_assoc();
-        $check->close();
-
-        if ($exists) {
-            json_response(['success' => false, 'message' => 'ชื่อผู้ใช้นี้มีในระบบแล้ว'], 409);
-        }
-
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $role = 'user';
-
-        $stmt = $conn->prepare('INSERT INTO users (username, password_hash, display_name, role, active) VALUES (?, ?, ?, ?, 1)');
-        if (!$stmt) {
-            json_response(['success' => false, 'message' => 'เตรียมคำสั่งสมัครสมาชิกไม่ได้: ' . $conn->error], 500);
-        }
-        $stmt->bind_param('ssss', $username, $passwordHash, $displayName, $role);
-
-        if (!$stmt->execute()) {
-            $message = $stmt->error;
-            $stmt->close();
-            json_response(['success' => false, 'message' => 'สมัครสมาชิกไม่ได้: ' . $message], 500);
-        }
-
-        $stmt->close();
-
-        json_response([
-            'success' => true,
-            'message' => 'สมัครสมาชิกสำเร็จ สามารถเข้าสู่ระบบได้แล้ว'
-        ], 201);
-    }
-
     // ==================== เข้าสู่ระบบ ====================
     $username = trim((string)($data['username'] ?? ''));
     $password = (string)($data['password'] ?? '');
