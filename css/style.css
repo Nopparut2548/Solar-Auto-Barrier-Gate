@@ -1003,3 +1003,12 @@ html[data-theme="dark"] .pagination-info {
 [data-theme="dark"] .mini-stats div:nth-child(3) b {
     color: #4ade80;
 }
+[data-theme="dark"] .mini-stats div {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .mini-stats div b {
+    display: inline-block;
+    margin-top: 3px;
+    color: #f8fafc;
+}

@@ -229,7 +229,8 @@ let currentLogFilter = 'all';
 
 function getFilteredLogs() {
   const query = ($('logSearch').value || '').toLowerCase().trim();
-  const selectedDate = $('logDate').value;
+  // ถ้ายังไม่ได้เลือกวันที่ ให้แสดงเฉพาะรายการของวันนี้
+  const selectedDate = $('logDate').value || dateKey(new Date());
 
   return [...logs]
     .sort((a, b) => fromSqlOrIso(b.timestamp) - fromSqlOrIso(a.timestamp))
@@ -244,7 +245,8 @@ function getFilteredLogs() {
 
 function updateLogTabCounts() {
   const query = ($('logSearch').value || '').toLowerCase().trim();
-  const selectedDate = $('logDate').value;
+  // ถ้ายังไม่ได้เลือกวันที่ ให้นับเฉพาะรายการของวันนี้
+  const selectedDate = $('logDate').value || dateKey(new Date());
   const base = [...logs].filter(log => {
     if (query && !(String(log.studentName) + log.studentId).toLowerCase().includes(query)) return false;
     if (selectedDate && dateKey(fromSqlOrIso(log.timestamp)) !== selectedDate) return false;
@@ -267,7 +269,7 @@ function renderLogPagination(totalItems) {
 
 function renderLogs() {
   const list = getFilteredLogs();
-  $('logCount').textContent = logs.length + ' รายการ';
+  $('logCount').textContent = list.length + ' รายการ';
   updateLogTabCounts();
 
   const body = $('logTableBody');

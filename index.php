@@ -198,13 +198,13 @@ if (empty($_SESSION['user'])) {
           <button class="btn btn-primary btn-sm" id="btnAddStudent">➕ เพิ่มนักศึกษา</button>
         </div>
         <div class="filters">
-          <input type="search" id="studentSearch" placeholder="🔍 ค้นหาชื่อ / รหัสนักศึกษา / คณะ...">
+          <input type="search" id="studentSearch" placeholder="🔍 ค้นหาชื่อ / รหัสนักศึกษา / สาขา...">
         </div>
         <div class="table-wrap">
           <table>
             <thead><tr>
               <th>ลำดับ</th><th>ชื่อ-นามสกุล</th><th>รหัสนักศึกษา</th>
-              <th>คณะ / สาขา</th><th>สถานะบัตร</th><th>จัดการ</th>
+              <th>สาขา</th><th>สถานะบัตร</th><th>จัดการ</th>
             </tr></thead>
             <tbody id="studentTableBody"></tbody>
           </table>
@@ -266,7 +266,7 @@ if (empty($_SESSION['user'])) {
     <div class="modal-head"><h3 id="logModalTitle">➕ เพิ่มบันทึกการเข้า-ออก</h3><button class="modal-close" onclick="closeModal('logModal')">✕</button></div>
     <form id="logForm">
       <div class="form-grid">
-        <div class="form-group full"><label>ชื่อนักศึกษา *</label><input id="fLogName" required placeholder="เช่น สมชาย ใจดี"></div>
+        <div class="form-group full"><label>ชื่อนักศึกษา *</label><input id="fLogName" required placeholder="เช่น นายสมชาย ใจดี"></div>
         <div class="form-group"><label>รหัสนักศึกษา *</label><input id="fLogSid" required placeholder="เช่น 6631501001"></div>
         <!-- RFID UID เก็บภายในระบบ ไม่แสดงบนหน้าเว็บ -->
         <div class="form-group"><label>ประเภท</label><select id="fLogType"><option value="in">เข้า</option><option value="out">ออก</option><option value="none">— (ไม่ระบุ)</option></select></div>
@@ -287,10 +287,10 @@ if (empty($_SESSION['user'])) {
     <div class="modal-head"><h3 id="studentModalTitle">➕ เพิ่มนักศึกษา</h3><button class="modal-close" onclick="closeModal('studentModal')">✕</button></div>
     <form id="studentForm">
       <div class="form-grid">
-        <div class="form-group full"><label>ชื่อ-นามสกุล *</label><input id="fStuName" required placeholder="เช่น ภูมิรพี แสงทอง"></div>
+        <div class="form-group full"><label>ชื่อ-นามสกุล *</label><input id="fStuName" required placeholder="เช่น นายภูมิรพี แสงทอง"></div>
         <div class="form-group"><label>รหัสนักศึกษา *</label><input id="fStuSid" required placeholder="เช่น 6631501001"></div>
         <!-- RFID UID เก็บภายในระบบ ไม่แสดงบนหน้าเว็บ -->
-        <div class="form-group full"><label>คณะ / สาขา</label><input id="fStuFaculty" placeholder="เช่น วิศวกรรมศาสตร์ (ไฟฟ้า)"></div>
+        <div class="form-group full"><label>สาขา</label><input id="fStuFaculty" placeholder="เช่น วิศวกรรมศาสตร์ (ไฟฟ้า)"></div>
         <div class="form-group"><label>สถานะบัตร</label><select id="fStuStatus"><option value="active">ใช้งาน</option><option value="suspended">ระงับ (ไม้กั้นไม่เปิด)</option></select></div>
       </div>
       <div class="modal-foot">
